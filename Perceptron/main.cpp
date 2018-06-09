@@ -29,7 +29,7 @@ int main()
 
 	std::vector<double> test = { 0.0,0.5 };
 
-	p1->train<int>(trainData, expectedOutput);
+	p1->train<int>(trainData.begin(), trainData.end(), expectedOutput.begin(), expectedOutput.end());
 	assert(0 == p1->evaluate(test.begin(), test.end()));
 
 	delete p1;
