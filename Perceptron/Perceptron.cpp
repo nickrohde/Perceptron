@@ -16,28 +16,28 @@ Perceptron::Perceptron(const size_t ui_SIZE, const double d_LEARN_RATE, const do
 } // end Constructor 3
 
 
-std::vector<double>& Perceptron::weight(void) const
+std::vector<double>* Perceptron::weight(void) const
 {
 	if (!b_initialized) // ensure object is in valid state
 	{
 		throw std::logic_error("Object is not initialized.");
 	} // end if
 
-	std::vector<double> other; 
+	auto other = new std::vector<double>();
 
 	try
 	{
-		other.reserve(size());
+		other->reserve(size());
 	} // end try
 	catch (std::bad_alloc)
 	{
 		errno = PerceptronErrors::OUT_OF_MEMORY;
-		other.clear();
-		return other;
+		other->clear();
+		return nullptr;
 	} // end catch
 
 	// copy weights into output vector
-	std::copy(weights.begin(), weights.end(), other.begin());
+	std::copy(weights.begin(), weights.end(), other->begin());
 
 	return other;
 } // end method weight

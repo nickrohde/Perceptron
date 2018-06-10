@@ -4,6 +4,7 @@
 #include "../../Utility/MasterInclude.hpp"
 #include "../../Utility/utility.hpp"
 #include <cerrno>
+#include <mutex>
 
 
 ///<summary>Errors that could occur during Perceptron execution; ERRNO will be set to the appropriate values.</summary>
@@ -100,7 +101,9 @@ class Perceptron
 
 						if (temp != i_EXPECTED_OUTPUT)
 						{
+							weights_lock.lock();
 							weights[i] = weights[i] - learnRate() * (temp - i_EXPECTED_OUTPUT) * (*start);
+							weights_lock.unlock();
 							b_changed = true;
 						} // end if
 					} // end for
@@ -158,7 +161,7 @@ class Perceptron
 
 				for (auto i = 0; train_data_start != train_data_end; i++)
 				{
-					train<T>((train_data_start + indices[i]).begin(), (train_data_start + indices[i]).end(), *(output_start + indices[i]));
+					train<T>((*(train_data_start + indices[i])).begin(), (*(train_data_start + indices[i])).end(), *(output_start + indices[i]));
 				} // end for
 			} // end template train
 
@@ -229,7 +232,7 @@ class Perceptron
 			///<returns>A copy of the weights of this Perceptron.</returns>
 			///<exception name="std::logic_error">Thrown if the object is uninitialized at point of call.</exception>
 			///<remarks>Complexity: O(n)</remarks>
-			std::vector<double>& weight(void) const;
+			std::vector<double>* weight(void) const;
 
 
 			///<summary>Whether or not this perceptron is initialized.</summary>
@@ -325,6 +328,8 @@ class Perceptron
 
 			///<summary>Whether or not the Perceptron is initialized.</summary>
 			bool b_initialized;
+
+			static std::mutex weights_lock;
 
 		#pragma endregion
 
